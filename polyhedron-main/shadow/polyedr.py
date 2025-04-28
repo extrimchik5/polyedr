@@ -135,6 +135,7 @@ class Polyedr:
 
         # списки вершин, рёбер и граней полиэдра
         self.vertexes, self.edges, self.facets = [], [], []
+        self.c
 
         # список строк файла
         with open(file) as f:
@@ -143,7 +144,7 @@ class Polyedr:
                     # обрабатываем первую строку; buf - вспомогательный массив
                     buf = line.split()
                     # коэффициент гомотетии
-                    c = float(buf.pop(0))
+                    self.c = float(buf.pop(0))
                     # углы Эйлера, определяющие вращение
                     self.alpha, self.beta, self.gamma = (float(x) * pi / 180.0 for x in buf)
                 elif i == 1:
@@ -153,7 +154,7 @@ class Polyedr:
                     # задание всех вершин полиэдра
                     x, y, z = (float(x) for x in line.split())
                     self.vertexes.append(R3(x, y, z).rz(
-                        self.alpha).ry(self.beta).rz(self.gamma) * c)
+                        self.alpha).ry(self.beta).rz(self.gamma) * self.c)
                 else:
                     # вспомогательный массив
                     buf = line.split()
@@ -203,7 +204,7 @@ class Polyedr:
 
 
                 # Проверяем, что центр лежит в полосе |x-2| < 1 и составляет с плоскостью угол меньше pi/7
-                if abs(proj_center.x - 2.0) < 1.0 and csug > cos(pi/7):
+                if abs(proj_center.x/self.c - 2.0) < 1.0 and csug > cos(pi/7):
                     # Вычисляем длину невидимой проекции ребра на плоскость XY
                     nevidim = (dx ** 2 + dy ** 2) ** 0.5
                     for s in edge.gaps:
